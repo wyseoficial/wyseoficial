@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WYSE - Coleção Oficial</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #a5a084;
+    --secondary: #e8e8e8;
+    --accent: #FFD700;
+    --light: #FFFFFF;
+    --gray: #161616;
+    --card-bg: #1c1c1c;
+    --card-border: #2a2a2a;
+    --text-muted: #777;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--secondary);
+    background: #111;
+    overflow-x: hidden;
+}
+
+h1,h2,h3 { font-family:'Bebas Neue',sans-serif; text-transform:uppercase; }
+a { text-decoration:none; color:inherit; }
+
+/* HERO */
+.hero {
+    height:100vh;
+    background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)), url('iconinicio.png') center/cover;
+    color:white;
+    display:flex;
+    flex-direction:column;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 5%;
+    background: rgba(0,0,0,0.8);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    transition: background 0.3s ease, padding 0.3s ease;
+}
+
+.navbar.scrolled { background: rgba(0,0,0,0); }
+
+.logo { font-size:2rem; color:var(--accent); }
+.logo img { height: 45px; width: auto; transition: 0.3s ease; }
+.logo img:hover { transform: scale(1.05); }
+
+.nav-links { list-style:none; display:flex; gap:2rem; }
+
+.cart-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+/* No dark mode o carrinho é sempre branco — removido light-bg */
+
+.cart-count {
+    position:absolute;
+    top:-8px;
+    right:-10px;
+    background:var(--accent);
+    color:black;
+    font-size:12px;
+    padding:3px 7px;
+    border-radius:50%;
+}
+
+.hero-content { margin-top: 7%; text-align: center; }
+.hero-content h1 { font-size: 3rem; }
+.hero-content p { font-size: 1.2rem; }
+.cta-button { padding: 8px 25px; font-size: 1rem; }
+
+/* PRODUCTS */
+.products-section { padding:100px 5%; background: #141414; }
+.products-section h2 { color: #fff; margin-bottom: 2rem; }
+.products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:2rem; }
+
+.product-card {
+    background: #1c1c1c;
+    border-radius: 10px;
+    overflow: visible;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    border: 1px solid #2a2a2a;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    border-color: #3a3a3a;
+}
+.product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px 10px 0 0;
+}
+.product-info { padding: 20px 20px 26px; }
+.product-info h3 { color: #e8e8e8; font-size: 1rem; margin-bottom: 4px; }
+.price { color: var(--accent); font-weight: bold; margin: 10px 0; }
+
+.buy-button {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(135deg, #a5a084, #a5a084);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 5px 15px rgba(115, 119, 77, 0.4);
+    text-transform: uppercase;
+}
+
+.buy-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(115, 119, 77, 0.4); }
+.buy-button:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(115, 119, 77, 0.4); }
+
+/* CART */
+.cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; z-index: 1500; }
+.cart-overlay.active { display:block; }
+
+.cart-sidebar {
+    position: fixed; top: 0; right: -400px; width: 380px; height: 100%;
+    background: #1a1a1a;
+    color: #e8e8e8;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+    transition: .4s ease; z-index: 2000; display: flex; flex-direction: column;
+    border-left: 1px solid #2a2a2a;
+}
+.cart-sidebar.active { right:0; }
+
+.cart-header {
+    padding: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #2a2a2a;
+    font-weight: 600;
+    color: #fff;
+}
+.cart-header h2 { font-size: 1.3rem; }
+
+.cart-item {
+    background: #222;
+    border: 1px solid #2e2e2e;
+    padding: 15px; border-radius: 10px; margin-bottom: 15px; font-size: 0.9rem;
+    color: #ccc;
+}
+.cart-item button:last-of-type { margin-top: 12px; background: #333; color: #ccc; }
+.cart-item button:last-of-type:hover { background: #ff4d4d; color: white; }
+.cart-item strong { font-size: 1rem; display: block; margin-bottom: 5px; color: #fff; }
+.cart-footer { padding:20px; border-top:1px solid #2a2a2a; }
+.cart-footer h3 { margin-bottom: 15px; font-size: 1.2rem; font-weight: 600; color: #fff; }
+
+.cart-item button {
+    background: #333; color: #ddd; border: none; padding: 4px 8px;
+    margin: 0 3px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: 0.2s;
+}
+.cart-item button:hover { background: var(--primary); color: #fff; }
+
+.checkout-btn {
+    width: 100%; padding: 15px; background: #008c4a; color: white; border: none;
+    cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s ease;
+    font-size: 1rem; box-shadow: 0 5px 15px rgba(0,140,74,0.3);
+}
+.checkout-btn:hover { background: #00b060; transform: translateY(-2px); }
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.cart-items::-webkit-scrollbar { width: 4px; }
+.cart-items::-webkit-scrollbar-track { background: #1a1a1a; }
+.cart-items::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* FOOTER */
+.main-footer { background:#0d0d0d; color:#ccc; padding:80px 5% 30px; }
+.footer-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:50px; margin-bottom:50px; }
+.footer-logo { font-size:2rem; color:var(--accent); margin-bottom:15px; }
+.footer-column h4 { color:white; margin-bottom:15px; font-size:1.1rem; }
+.footer-column p { font-size:0.9rem; line-height:1.6; }
+.footer-column ul { list-style:none; padding:0; }
+.footer-column ul li { margin-bottom:10px; font-size:0.9rem; }
+.footer-column ul li a { color:#ccc; transition:0.3s; }
+.footer-column ul li a:hover { color:var(--primary); }
+.social-icons { margin-top:15px; display:flex; gap:15px; }
+.social-icons a { color:white; font-size:18px; transition:0.3s; }
+.social-icons a:hover { color:var(--primary); }
+.payment-methods { display:flex; gap:15px; font-size:28px; margin-top:10px; color:white; }
+.footer-bottom { border-top:1px solid #222; padding-top:20px; text-align:center; font-size:0.8rem; color:#777; }
+
+/* ABOUT MODAL */
+.about-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:2000; }
+.about-modal.active { display:flex; }
+.about-modal-content {
+    background: #1c1c1c;
+    border: 1px solid #2e2e2e;
+    color: #e8e8e8;
+    padding:40px; max-width:600px; width:90%; border-radius:10px; position:relative; animation:fadeIn 0.3s ease;
+}
+.about-modal-content h2 { margin-bottom:20px; color: #fff; }
+.about-modal-content p { margin-bottom:15px; line-height:1.6; color: #bbb; }
+.close-about { position:absolute; top:15px; right:20px; font-size:24px; cursor:pointer; color: #aaa; transition: color 0.2s; }
+.close-about:hover { color: #fff; }
+
+/* =========================================================
+   NOVO MODAL DE PRODUTO — ESTILO NIKE / QIX
+   ========================================================= */
+
+.product-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    align-items: stretch;
+    justify-content: stretch;
+}
+.product-modal.active { display: flex; }
+
+/* Overlay escuro que fecha o modal */
+.pm-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+}
+
+/* Container principal — dois painéis */
+.pm-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 1100px;
+    height: 90vh;
+    max-height: 750px;
+    margin: auto;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6);
+    animation: pmSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pmSlideIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── PAINEL ESQUERDO — imagem ── */
+.pm-image-panel {
+    position: relative;
+    flex: 0 0 52%;
+    background: #0a0a0a;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Marca d'água decorativa */
+.pm-image-panel::before {
+    content: 'WYSE';
+    position: absolute;
+    bottom: -30px;
+    left: -10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 160px;
+    color: rgba(255,255,255,0.04);
+    letter-spacing: 8px;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+}
+
+/* Linha decorativa dourada vertical */
+.pm-image-panel::after {
+    content: '';
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 3px;
+    height: 80px;
+    background: var(--accent);
+}
+
+.pm-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.pm-img:hover { transform: scale(1.04); }
+
+/* Badge de coleção */
+.pm-badge {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+}
+
+/* ── PAINEL DIREITO — detalhes ── */
+.pm-details-panel {
+    flex: 1;
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 44px 40px;
+    overflow-y: auto;
+    position: relative;
+    min-height: 0; /* permite scroll interno correto */
+}
+
+/* Agrupa botões + footer numa área que nunca some */
+.pm-actions {
+    margin-top: auto;
+    padding-top: 16px;
+    flex-shrink: 0;
+}
+
+/* Botão fechar */
+.pm-close {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+.pm-close:hover { background: rgba(255,255,255,0.18); transform: rotate(90deg); }
+
+/* Linha de categoria */
+.pm-category {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+/* Nome do produto */
+.pm-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    color: #fff;
+}
+
+/* Preço */
+.pm-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.pm-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+.pm-price-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 1px;
+}
+
+/* Divider */
+.pm-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin-bottom: 24px;
+}
+
+/* Descrição */
+.pm-description {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #aaa;
+    margin-bottom: 32px;
+}
+
+/* Tags de atributos */
+.pm-attrs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.pm-attr {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ccc;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+
+/* Seleção de tamanho */
+.pm-size-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.pm-sizes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+}
+
+.pm-size-btn {
+    width: 52px;
+    height: 52px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #bbb;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
+.pm-size-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,215,0,0.05);
+}
+
+.pm-size-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 700;
+}
+
+/* Botão principal de compra */
+.pm-buy-btn {
+    width: 100%;
+    padding: 18px 0;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.pm-buy-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transition: left 0.5s ease;
+}
+
+.pm-buy-btn:hover::after { left: 160%; }
+
+.pm-buy-btn:hover {
+    background: #ffe033;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.3);
+}
+
+.pm-buy-btn:active { transform: translateY(0); }
+
+/* Botão secundário "Finalizar no WhatsApp" */
+.pm-wpp-btn {
+    width: 100%;
+    padding: 16px 0;
+    background: transparent;
+    color: #25D366;
+    border: 1px solid #25D366;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pm-wpp-btn:hover { background: rgba(37, 211, 102, 0.08); }
+
+/* Rodapé do painel */
+.pm-footer-note {
+    padding-top: 20px;
+    margin-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #444;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.pm-footer-note span { display: flex; align-items: center; gap: 6px; }
+.pm-footer-note i { color: #666; }
+
+/* Toast de confirmação */
+.pm-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #fff;
+    color: #111;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 3px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pm-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.pm-toast i { color: var(--accent); font-size: 16px; }
+
+/* Aviso de selecionar tamanho */
+.pm-size-warning {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #ff5555;
+    margin-top: -28px;
+    margin-bottom: 14px;
+    display: none;
+}
+
+/* ── RESPONSIVO ── */
+@media (max-width: 768px) {
+    .navbar { padding: 10px 5%; }
+    .logo img { height: 35px; }
+    .hero-content { margin-top: 15%; padding: 0 10px; }
+    .hero-content h1 { font-size: 2rem; }
+    .products-grid { grid-template-columns: 1fr; gap: 15px; }
+    .product-card img { height: 250px; }
+    .cart-sidebar { width: 90%; }
+
+    .pm-container {
+        flex-direction: column;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        overflow-y: auto;
+    }
+
+    .pm-image-panel {
+        flex: 0 0 300px;
+        height: 300px;
+    }
+
+    .pm-image-panel::before { font-size: 90px; }
+
+    .pm-details-panel {
+        padding: 32px 24px 40px;
+    }
+
+    .pm-title { font-size: 2rem; }
+    .pm-price { font-size: 1.8rem; }
+
+    .pm-size-btn { width: 46px; height: 46px; font-size: 12px; }
+}
+
+/* Animações globais */
+@keyframes fadeIn {
+    from { opacity:0; transform:translateY(-20px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.cart-icon.pop { animation: pop 0.3s ease; }
+</style>
+</head>
+
+<!-- MODAL SOBRE NÓS -->
+<div class="about-modal" id="aboutModal">
+    <div class="about-modal-content">
+        <span class="close-about">&times;</span>
+        <h2>Sobre a WYSE</h2>
+        <p>A WYSE nasceu em Londrina com o propósito de representar atitude, identidade e performance no cenário streetwear nacional.</p>
+        <p>Cada coleção é criada para quem vive intensidade, movimento e autenticidade. Não seguimos tendências — criamos presença.</p>
+        <p>WYSE não é apenas roupa. É posicionamento.</p>
+    </div>
+</div>
+
+<body>
+
+<!-- CARRINHO -->
+<div class="cart-overlay"></div>
+<div class="cart-sidebar">
+    <div class="cart-header">
+        <h2>Seu Carrinho</h2>
+        <span class="close-cart">&times;</span>
+    </div>
+    <div class="cart-items"></div>
+    <div class="cart-footer">
+        <h3>Total: R$ <span id="cart-total">0.00</span></h3>
+        <button class="checkout-btn">Finalizar no WhatsApp</button>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="hero">
+    <nav class="navbar">
+        <div class="logo">
+            <img src="logowysepng.png" alt="WYSE Logo">
+        </div>
+        <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+        </div>
+    </nav>
+    <div class="hero-content">
+        <h1>COLEÇÃO OFICIAL WYSE</h1>
+        <p>Estilo que vibra nas ruas</p>
+    </div>
+</header>
+
+<!-- PRODUTOS -->
+<section id="colecao" class="products-section">
+    <h2>NOSSA COLEÇÃO</h2>
+    <div class="products-grid">
+
+        <div class="product-card">
+            <img src="iconcamiseta1.png">
+            <div class="product-info">
+                <h3>Camiseta Broken Halo WYSE</h3>
+                <p class="price">R$ 99,90</p>
+                <button class="buy-button add-to-cart"
+                    data-name="Camiseta Broken Halo WYSE"
+                    data-price="99.90"
+                    data-img="iconcamiseta1.png"
+                    data-description="100% algodão penteado, corte oversized com caimento premium. Estampa serigrafia de alta definição que não desbota."
+                    data-sizes="P,M,G,GG"
+                    data-badge="Coleção 2026"
+                    data-attrs="100% Algodão,Oversized,Serigrafia HD"
+                >Ver Produto</button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <img src="iconcamiseta2.png">
+            <div class="product-info">
+                <h3>Camiseta Eternal Watch WYSE</h3>
+                <p class="price">R$ 99,90</p>
+                <button class="buy-button add-to-cart"
+                    data-name="Camiseta Eternal Watch WYSE"
+                    data-price="99.90"
+                    data-img="iconcamiseta2.png"
+                    data-description="100% algodão penteado, corte oversized com caimento premium. Estampa serigrafia de alta definição que não desbota."
+                    data-sizes="P,M,G,GG"
+                    data-badge="Coleção 2026"
+                    data-attrs="100% Algodão,Oversized,Serigrafia HD"
+                >Ver Produto</button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <img src="iconcamiseta3.jpeg">
+            <div class="product-info">
+                <h3>Camiseta Eyes on You WYSE</h3>
+                <p class="price">R$ 99,90</p>
+                <button class="buy-button add-to-cart"
+                    data-name="Camiseta Eyes on You WYSE"
+                    data-price="99.90"
+                    data-img="iconcamiseta3.jpeg"
+                    data-description="100% algodão penteado, corte oversized com caimento premium. Estampa serigrafia de alta definição que não desbota."
+                    data-sizes="P,M,G,GG"
+                    data-badge="Coleção 2026"
+                    data-attrs="100% Algodão,Oversized,Serigrafia HD"
+                >Ver Produto</button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <img src="iconcamiseta4.jpeg">
+            <div class="product-info">
+                <h3>Camiseta Cupid Strike WYSE</h3>
+                <p class="price">R$ 99,90</p>
+                <button class="buy-button add-to-cart"
+                    data-name="Camiseta Cupid Strike WYSE"
+                    data-price="99.90"
+                    data-img="iconcamiseta4.jpeg"
+                    data-description="100% algodão penteado, corte oversized com caimento premium. Estampa serigrafia de alta definição que não desbota."
+                    data-sizes="P,M,G,GG"
+                    data-badge="Coleção 2026"
+                    data-attrs="100% Algodão,Oversized,Serigrafia HD"
+                >Ver Produto</button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contato" class="main-footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3 class="footer-logo">WYSE</h3>
+            <p>A WYSE é uma marca streetwear criada para quem vive intensidade. Nascida em Londrina, unimos estilo urbano, performance e autenticidade em cada coleção lançada.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+                <h3>@wyse_streetwear</h3>
+            </div>
+        </div>
+        <div class="footer-column">
+            <h4>Institucional</h4>
+            <ul>
+                <li><a href="#" id="openAbout">Sobre Nós</a></li>
+                <li><a href="https://wa.me/554388230598?text=Olá! Tenho interesse em ser parceiro da WYSE." target="_blank">Seja um Parceiro</a></li>
+                <li><a href="https://wa.me/554388230598?text=Olá! Gostaria de enviar meu currículo para trabalhar na WYSE." target="_blank">Trabalhe Conosco</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h4>Atendimento</h4>
+            <ul>
+                <li><i class="fas fa-phone"></i> (43) 98823-0598</li>
+                <li><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1f2d5d3c4c4d5d6c4c0d3d6d8d2c4e1c6ccc0c8cd8fc2cecc">[email&#160;protected]</a></li>
+                <li><i class="fas fa-clock"></i> Seg à Sex - 09h às 18h</li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h4>Pagamento</h4>
+            <div class="payment-methods pix-only">
+                <i class="fas fa-qrcode"></i>
+                <span>Pagamento via Pix</span>
+            </div>
+            <p class="pix-info">Aprovação imediata e 100% segura.</p>
+            <h1 style="margin-top:20px;">Segurança</h1>
+            <p>Compra 100% segura e protegida.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 WYSE Streetwear. Todos os direitos reservados.</p>
+        <p>• Desenvolvido por @vinixx.dx</p>
+    </div>
+</footer>
+
+<!-- =====================================================
+     NOVO MODAL DE PRODUTO
+     ===================================================== -->
+<div class="product-modal" id="productModal">
+    <div class="pm-overlay" id="pmOverlay"></div>
+    <div class="pm-container">
+
+        <!-- PAINEL ESQUERDO — Imagem -->
+        <div class="pm-image-panel">
+            <span class="pm-badge" id="pmBadge">Coleção 2026</span>
+            <img src="" alt="" class="pm-img" id="pmImage">
+        </div>
+
+        <!-- PAINEL DIREITO — Detalhes -->
+        <div class="pm-details-panel">
+
+            <button class="pm-close" id="pmClose"><i class="fas fa-times"></i></button>
+
+            <p class="pm-category">WYSE Streetwear · Drop 2026</p>
+            <h2 class="pm-title" id="pmTitle">Camiseta WYSE</h2>
+
+            <div class="pm-price-row">
+                <span class="pm-price" id="pmPrice">R$ 99,90</span>
+                <span class="pm-price-label">à vista no Pix</span>
+            </div>
+
+            <div class="pm-divider"></div>
+
+            <p class="pm-description" id="pmDescription">Descrição do produto.</p>
+
+            <div class="pm-attrs" id="pmAttrs">
+                <!-- gerado via JS -->
+            </div>
+
+            <p class="pm-size-label">Selecione o tamanho</p>
+            <div class="pm-sizes" id="pmSizes">
+                <!-- gerado via JS -->
+            </div>
+            <p class="pm-size-warning" id="pmSizeWarning">⚠ Selecione um tamanho para continuar</p>
+
+            <div class="pm-actions">
+                <button class="pm-buy-btn" id="pmBuyBtn">Adicionar ao Carrinho</button>
+
+                <button class="pm-wpp-btn" id="pmWppBtn">
+                    <i class="fab fa-whatsapp"></i> Comprar via WhatsApp
+                </button>
+
+                <div class="pm-footer-note">
+                    <span><i class="fas fa-shield-alt"></i> Pagamento seguro</span>
+                    <span><i class="fas fa-undo"></i> Troca facilitada</span>
+                    <span><i class="fas fa-qrcode"></i> Pix aprovação imediata</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="pm-toast" id="pmToast">
+    <i class="fas fa-check-circle"></i>
+    <span id="pmToastMsg">Adicionado ao carrinho!</span>
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── Carrinho ── */
+const cartIcon = document.querySelector('.cart-icon');
+const cartSidebar = document.querySelector('.cart-sidebar');
+const cartOverlay = document.querySelector('.cart-overlay');
+const closeCart = document.querySelector('.close-cart');
+const cartItemsContainer = document.querySelector('.cart-items');
+const cartTotal = document.getElementById('cart-total');
+const cartCount = document.querySelector('.cart-count');
+
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+
+function updateCartUI(){
+    cartItemsContainer.innerHTML = "";
+    let total = 0, count = 0;
+    cart.forEach((item, index) => {
+        total += item.price * item.quantity;
+        count += item.quantity;
+        cartItemsContainer.innerHTML += `
+        <div class="cart-item">
+            <strong>${item.name}</strong>
+            <p>R$ ${item.price.toFixed(2)}</p>
+            <p>Qtd: ${item.quantity}
+                <button onclick="changeQuantity(${index},1)">+</button>
+                <button onclick="changeQuantity(${index},-1)">-</button>
+            </p>
+            <button onclick="removeItem(${index})">Remover</button>
+            <hr>
+        </div>`;
+    });
+    cartTotal.textContent = total.toFixed(2);
+    cartCount.textContent = count;
+    saveCart();
+}
+
+function addToCart(name, price){
+    const existing = cart.find(item => item.name === name);
+    if(existing){ existing.quantity++; } else { cart.push({name, price, quantity:1}); }
+    updateCartUI();
+}
+
+function changeQuantity(index, amount){
+    cart[index].quantity += amount;
+    if(cart[index].quantity <= 0){ cart.splice(index,1); }
+    updateCartUI();
+}
+
+function removeItem(index){ cart.splice(index,1); updateCartUI(); }
+
+function showToast(msg){
+    const toast = document.getElementById('pmToast');
+    document.getElementById('pmToastMsg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+cartIcon.addEventListener('click', () => {
+    cartSidebar.classList.add('active');
+    cartOverlay.classList.add('active');
+});
+closeCart.addEventListener('click', () => {
+    cartSidebar.classList.remove('active');
+    cartOverlay.classList.remove('active');
+});
+cartOverlay.addEventListener('click', () => {
+    cartSidebar.classList.remove('active');
+    cartOverlay.classList.remove('active');
+});
+
+document.querySelector('.checkout-btn').addEventListener('click', () => {
+    let msg = "Olá! Quero finalizar:%0A%0A";
+    cart.forEach(item => {
+        msg += `${item.name} - Qtd: ${item.quantity} - R$ ${(item.price*item.quantity).toFixed(2)}%0A`;
+    });
+    msg += `%0ATotal: R$ ${cartTotal.textContent}`;
+    window.open(`https://wa.me/554388230598?text=${msg}`, '_blank');
+});
+
+updateCartUI();
+
+/* ── Modal Sobre Nós ── */
+const openAbout = document.getElementById('openAbout');
+const aboutModal = document.getElementById('aboutModal');
+const closeAbout = document.querySelector('.close-about');
+
+openAbout.addEventListener('click', (e) => { e.preventDefault(); aboutModal.classList.add('active'); });
+closeAbout.addEventListener('click', () => aboutModal.classList.remove('active'));
+aboutModal.addEventListener('click', (e) => { if(e.target === aboutModal) aboutModal.classList.remove('active'); });
+
+/* ── Navbar scroll — cor do carrinho muda conforme o fundo ── */
+(function(){
+    const navbar   = document.querySelector(".navbar");
+    const logo     = document.querySelector(".logo img");
+    const hero     = document.querySelector(".hero");
+
+    function updateNavbar(){
+        const scroll     = window.scrollY;
+        const heroBottom = hero.offsetHeight;
+
+        /* Navbar transparência */
+        let navOpacity = 0.8 - (scroll / 300);
+        if(navOpacity < 0) navOpacity = 0;
+        navbar.style.background = `rgba(0,0,0,${navOpacity})`;
+
+        /* Logo fade */
+        let logoOpacity = 1 - (scroll / 200);
+        if(logoOpacity < 0) logoOpacity = 0;
+        logo.style.opacity = logoOpacity;
+
+        /* Carrinho sempre branco no dark mode — sem troca de cor */
+    }
+
+    window.addEventListener("scroll", updateNavbar);
+    updateNavbar(); // estado inicial
+})();
+
+/* ── NOVO MODAL DE PRODUTO ── */
+const productModal  = document.getElementById('productModal');
+const pmOverlay     = document.getElementById('pmOverlay');
+const pmClose       = document.getElementById('pmClose');
+const pmImage       = document.getElementById('pmImage');
+const pmTitle       = document.getElementById('pmTitle');
+const pmPrice       = document.getElementById('pmPrice');
+const pmDescription = document.getElementById('pmDescription');
+const pmBadge       = document.getElementById('pmBadge');
+const pmAttrs       = document.getElementById('pmAttrs');
+const pmSizes       = document.getElementById('pmSizes');
+const pmSizeWarning = document.getElementById('pmSizeWarning');
+const pmBuyBtn      = document.getElementById('pmBuyBtn');
+const pmWppBtn      = document.getElementById('pmWppBtn');
+
+let currentProduct = null;
+let selectedSize   = null;
+
+function openProductModal(btn) {
+    currentProduct = {
+        name:        btn.dataset.name,
+        price:       parseFloat(btn.dataset.price),
+        img:         btn.dataset.img,
+        description: btn.dataset.description,
+        sizes:       btn.dataset.sizes.split(','),
+        badge:       btn.dataset.badge  || 'Coleção 2026',
+        attrs:       btn.dataset.attrs  ? btn.dataset.attrs.split(',') : [],
+    };
+    selectedSize = null;
+
+    pmImage.src              = currentProduct.img;
+    pmTitle.textContent      = currentProduct.name;
+    pmPrice.textContent      = `R$ ${currentProduct.price.toFixed(2).replace('.',',')}`;
+    pmDescription.textContent = currentProduct.description;
+    pmBadge.textContent      = currentProduct.badge;
+    pmSizeWarning.style.display = 'none';
+
+    /* Attrs */
+    pmAttrs.innerHTML = currentProduct.attrs.map(a =>
+        `<span class="pm-attr">${a}</span>`
+    ).join('');
+
+    /* Tamanhos */
+    pmSizes.innerHTML = currentProduct.sizes.map(s => `
+        <button class="pm-size-btn" data-size="${s}">${s}</button>
+    `).join('');
+
+    pmSizes.querySelectorAll('.pm-size-btn').forEach(sBtn => {
+        sBtn.addEventListener('click', () => {
+            pmSizes.querySelectorAll('.pm-size-btn').forEach(b => b.classList.remove('selected'));
+            sBtn.classList.add('selected');
+            selectedSize = sBtn.dataset.size;
+            pmSizeWarning.style.display = 'none';
+        });
+    });
+
+    productModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal(){
+    productModal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+pmClose.addEventListener('click', closeProductModal);
+pmOverlay.addEventListener('click', closeProductModal);
+
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeProductModal();
+});
+
+pmBuyBtn.addEventListener('click', () => {
+    if(!selectedSize){
+        pmSizeWarning.style.display = 'block';
+        pmSizes.style.animation = 'none';
+        pmSizes.offsetHeight;
+        return;
+    }
+    const fullName = `${currentProduct.name} - Tam. ${selectedSize}`;
+    addToCart(fullName, currentProduct.price);
+
+    cartIcon.classList.add('pop');
+    setTimeout(() => cartIcon.classList.remove('pop'), 300);
+
+    showToast(`${selectedSize} adicionado ao carrinho!`);
+    closeProductModal();
+});
+
+pmWppBtn.addEventListener('click', () => {
+    if(!selectedSize){
+        pmSizeWarning.style.display = 'block';
+        return;
+    }
+    const msg = encodeURIComponent(
+        `Olá! Tenho interesse na:\n\n${currentProduct.name}\nTamanho: ${selectedSize}\nValor: R$ ${currentProduct.price.toFixed(2).replace('.',',')}\n\nGostaria de finalizar o pedido.`
+    );
+    window.open(`https://wa.me/554388230598?text=${msg}`, '_blank');
+});
+
+/* Abre o modal ao clicar em qualquer botão de produto */
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', () => openProductModal(btn));
+});
+</script>
+
+</body>
+</html>
